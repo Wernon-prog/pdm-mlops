@@ -2,7 +2,7 @@ FROM python:3.13-slim
 WORKDIR /app
 COPY requirements-api.txt .
 RUN pip install --no-cache-dir -r requirements-api.txt
-COPY app.py data.py model.joblib ./
+COPY app.py data.py drift.py model.joblib ./
 EXPOSE 8000
 RUN useradd --create-home appuser
 USER appuser

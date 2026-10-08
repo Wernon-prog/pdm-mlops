@@ -1,0 +1,76 @@
+groups:
+  - name: predictive-maintenance
+    rules:
+
+      - alert: FeatureDriftDetected
+        expr: pdm_feature_psi > 0.25
+        for: 10s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Feature drift detected on {{ $labels.feature }}"
+
+      - alert: PredictionDriftDetected
+        expr: pdm_prediction_psi > 0.25
+        for: 10s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Prediction distribution has drifted"
+
+      - alert: ModelRecallDegraded
+        expr: |
+          (pdm_model_rolling_recall < 0.50)
+          and
+          (pdm_positive_labels_received_total >= 10)
+        for: 10s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Rolling recall is below 0.50"
+
+      - alert: HighErrorRate
+        expr: |
+          sum(
+            rate(
+              pdm_api_requests_total{
+                endpoint="/predict",
+                status!="200"
+              }[1m]
+            )
+          )
+          /
+          clamp_min(
+            sum(
+              rate(
+                pdm_api_requests_total{
+                  endpoint="/predict"
+                }[1m]
+              )
+            ),
+            0.001
+          )
+          > 0.10
+        for: 10s
+        labels:
+          severity: warning
+        annotations:
+          summary: "More than 10% of prediction requests are failing"
+
+      - alert: HighP95Latency
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(
+              rate(
+                pdm_api_latency_seconds_bucket{
+                  endpoint="/predict"
+                }[1m]
+              )
+            ) by (le)
+          ) > 0.20
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 prediction latency is above 200 ms"
