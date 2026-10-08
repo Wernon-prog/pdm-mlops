@@ -7,16 +7,22 @@ import joblib
 import mlflow
 import mlflow.sklearn
 from mlflow import MlflowClient
-from sklearn.ensemble import RandomForestClassifier
+
+# Extra models you may use in TODO 2c:
+from sklearn.ensemble import (
+    ExtraTreesClassifier,
+    RandomForestClassifier,
+)
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import average_precision_score, precision_score, recall_score, roc_auc_score
+from sklearn.metrics import (
+    average_precision_score,
+    precision_score,
+    recall_score,
+    roc_auc_score,
+)
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
-# Extra models you may use in TODO 2c:
-from sklearn.ensemble import ExtraTreesClassifier, GradientBoostingClassifier
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.tree import DecisionTreeClassifier
 
 from data import FEATURES, TARGET, make_data
 
